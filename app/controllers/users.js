@@ -4,9 +4,24 @@ const jwt = require('jsonwebtoken');
 
 // Environment variables
 const secret = process.env.JWT_SECRET;
-
+//first verion of register function
+// exports.register = async (req, res) => {
+//     try {
+//         const user = new User(req.body);
+//         user.password = req.body.password; // This will trigger the virtual setter
+//         await user.save();
+//         res.status(200).json({ message: "User successfully registered" });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 exports.register = async (req, res) => {
     try {
+        // Check if the user is trying to set their role to 'administrator'
+        if (req.body.role && req.body.role === 'administrator') {
+            return res.status(403).json({ message: "Administration privileges are denied" });
+        }
+
         const user = new User(req.body);
         user.password = req.body.password; // This will trigger the virtual setter
         await user.save();
@@ -83,3 +98,17 @@ exports.deleteUser = async (req, res) => {
 
 
 // Additional controllers for admin functionality can be added here
+
+
+exports.makeAdmin = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const updatedUser = await User.findByIdAndUpdate(userId, { role: 'administrator' }, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ message: "User role updated to administrator", user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
