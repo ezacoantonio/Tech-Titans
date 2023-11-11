@@ -44,6 +44,15 @@ exports.login = async (req, res) => {
     }
 };
 
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.json(users);
+    } catch (error) {
+        res.status(500).send("Error fetching users: " + error.message);
+    }
+};
+
 exports.viewProfile = async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);

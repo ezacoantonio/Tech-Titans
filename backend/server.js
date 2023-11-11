@@ -19,8 +19,6 @@ mongoose.connect(process.env.MONGODB_URI,)
   .catch(err => console.error('Could not connect to MongoDB', err));
 
 // Define routes here
-// Example: app.use('/api/users', require('./routes/users'));
-// User routes
 app.use('/users', userRoutes);
 
 const port = process.env.PORT || 5000;

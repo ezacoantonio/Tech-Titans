@@ -9,6 +9,9 @@ router.post('/register', userController.register);
 // User Login
 router.post('/login', userController.login);
 
+// Route to get all users
+router.get('/listusers', userController.getAllUsers);
+
 // User Profile Update
 router.put('/update', userController.updateProfile);
 
