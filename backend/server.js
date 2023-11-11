@@ -1,10 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 //imports
 const userRoutes = require('./app/routes/users');
 const app = express();
+
+// Enable CORS for all routes
+app.use(cors());
 
 // Middleware to parse JSON requests
 app.use(express.json());
@@ -19,7 +23,7 @@ mongoose.connect(process.env.MONGODB_URI,)
 // User routes
 app.use('/users', userRoutes);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
