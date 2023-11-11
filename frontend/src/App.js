@@ -1,4 +1,5 @@
 import React from 'react';
+import './index.css'; // Adjust the path if your file is named differently
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import WelcomePage from './pages/WelcomePage';
 import LoginPage from './pages/LoginPage';

@@ -10,16 +10,17 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Switch from '@mui/material/Switch';
-import Logout from './Logout'; // Import the Logout component
+import useStyles from '../styles/NavigationAppBarStyles';
+import Logout from './Logout'; 
 
 export default function NavigationAppBar() {
+  const classes = useStyles();
   const [auth, setAuth] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [logoutSwitch, setLogoutSwitch] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user token exists in local storage
     const token = localStorage.getItem('userToken');
     if (token) {
       setAuth(true);
@@ -47,14 +48,13 @@ export default function NavigationAppBar() {
   const handleLogoutSwitch = (event) => {
     setLogoutSwitch(event.target.checked);
     if (event.target.checked) {
-      // When switch is turned on, trigger logout
       setAuth(false);
     }
   };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.appBar}>
         <Toolbar>
           <IconButton
             size="large"
@@ -67,7 +67,7 @@ export default function NavigationAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Your App Name
+            Titan Store
           </Typography>
           <Menu
             id="menu-appbar"
@@ -118,7 +118,7 @@ export default function NavigationAppBar() {
           )}
         </Toolbar>
       </AppBar>
-      {logoutSwitch && <Logout />} {/* Render Logout component when switch is on */}
+      {logoutSwitch && <Logout />}
     </Box>
   );
 }

@@ -20,7 +20,7 @@ const LoginPage = () => {
             setLoading(false);
             if (response.status === 200) {
                 setAlert({ show: true, type: 'success', message: 'Login successful!' });
-                setTimeout(() => navigate('/dashboard'), 2000); // Redirect to dashboard after 3 seconds
+                setTimeout(() => navigate('/dashboard'), 500); // Redirect to dashboard after 3 seconds
             } else {
                 setAlert({ show: true, type: 'error', message: 'Invalid credentials' });
             }
