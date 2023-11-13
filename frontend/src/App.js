@@ -8,6 +8,8 @@ import SignUpPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 //import Navigation from './components/Navigation';
 import NavigationBar from './components/NavigationBar';
+import ProductListPage from './pages/Product-ListPage';
+import ProductDetailsPage from './pages/Product-DetailsPage';
 
 function App() {
   return (
@@ -15,11 +17,18 @@ function App() {
     <NavigationBar />
       {/* <Navigation /> */}
       <Routes>
+
+
         <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+
+        <Route path="/product-list" element={ProductListPage}/>
+        <Route path="/product-details" element={ProductDetailsPage}/>
+
+
       </Routes>
     </Router>
   );
