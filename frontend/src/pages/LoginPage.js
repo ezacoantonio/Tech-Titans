@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Box, Container } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Box, Container } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import LoginForm from '../components/users/LoginForm';
 import Alert from '../components/CustomAlert';
 import Loading from '../components/Loading';
 
@@ -11,6 +12,8 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [alert, setAlert] = useState({ show: false, type: '', message: '' });
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/homepage";
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -19,10 +22,13 @@ const LoginPage = () => {
             const response = await axios.post('http://localhost:5000/users/login', { email, password });
             setLoading(false);
             if (response.status === 200) {
+                localStorage.setItem('userToken', response.data.token);
                 setAlert({ show: true, type: 'success', message: 'Login successful!' });
-                setTimeout(() => navigate('/dashboard'), 500); // Redirect to dashboard after 3 seconds
+                console.log('Login successful!');
+                setTimeout(() => navigate(from, { replace: true }), 100);
             } else {
                 setAlert({ show: true, type: 'error', message: 'Invalid credentials' });
+                console.log('Login failed: Invalid credentials');
             }
         } catch (error) {
             setLoading(false);
@@ -41,30 +47,14 @@ const LoginPage = () => {
                 }}
             >
                 <h1>Login</h1>
-                <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-                    <TextField
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        margin="normal"
-                        fullWidth
-                        required
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        margin="normal"
-                        fullWidth
-                        required
-                    />
-                    <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 3, mb: 2 }}>
-                        Login
-                    </Button>
-                    {loading && <Loading />}
-                </form>
+                <LoginForm
+                    email={email}
+                    setEmail={setEmail}
+                    password={password}
+                    setPassword={setPassword}
+                    handleSubmit={handleSubmit}
+                />
+                {loading && <Loading />}
                 {alert.show && <Alert type={alert.type} message={alert.message} />}
             </Box>
         </Container>

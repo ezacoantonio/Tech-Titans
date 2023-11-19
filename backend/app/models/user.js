@@ -23,6 +23,11 @@ const UserSchema = new Schema({
     required: true,
     trim: true
   },
+  accountBalance: {
+    type: Number,
+    default: 1000, 
+    min: [0, 'Account balance low please recharge your account'] 
+  },
   hashed_password: {
     type: String,
     required: true
