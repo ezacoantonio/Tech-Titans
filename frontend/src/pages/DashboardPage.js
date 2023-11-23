@@ -12,6 +12,7 @@ const DashboardPage = () => {
                 id: user._id, // Using server-generated ID
                 name: `${user.firstName} ${user.lastName}`, // Concatenating first name and last name
                 email: user.email,
+                balance: user.accountBalance
                 // Add other fields if needed
             }));
             setUsers(userData);
@@ -36,6 +37,7 @@ const DashboardPage = () => {
                         <TableRow>
                             <TableCell>Name</TableCell>
                             <TableCell>Email</TableCell>
+                            <TableCell>Balance</TableCell>
                             {/* Add other headers if needed */}
                         </TableRow>
                     </TableHead>
@@ -44,6 +46,7 @@ const DashboardPage = () => {
                             <TableRow key={user.id}>
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.balance}</TableCell>
                                 {/* Add other cells if needed */}
                             </TableRow>
                         ))}

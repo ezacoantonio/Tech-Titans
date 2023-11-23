@@ -21,4 +21,8 @@ router.put('/update/:id', auth.requireSignin, auth.isAdmin, productController.up
 // DELETE: Delete a product (Admin only)
 router.delete('/delete/:id', auth.requireSignin, auth.isAdmin, productController.deleteProduct);
 
+// GET: Search products
+router.get('/search', productController.searchProducts);
+
+
 module.exports = router;

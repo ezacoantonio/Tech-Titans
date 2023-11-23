@@ -5,11 +5,12 @@ import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
 import Logout from "./components/Logout";
 import SignUpPage from "./pages/SignupPage";
-//import DashboardPage from "./pages/DashboardPage";
+import DashboardPage from "./pages/DashboardPage";
 import AdminDashboard from "./pages/AdminDashboard"; // Import the AdminDashboard
 import ProtectedRoute from "./components/ProtectedRoute";
 import NavigationBar from "./components/NavigationBar";
 import HomePage from "./pages/HomePage";
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -20,14 +21,13 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/signup" element={<SignUpPage />} />
-        {/* <Route
+        <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
               <DashboardPage />
-            </ProtectedRoute>
           }
-        /> */}
+        />
+        <Route path="/profile/:uniqueId" element={<ProfilePage />} />
         <Route
           path="/homepage"
           element={

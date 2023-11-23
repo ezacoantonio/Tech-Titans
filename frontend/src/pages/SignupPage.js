@@ -37,8 +37,8 @@ const SignUpPage = () => {
                 setAlert({ show: true, type: 'success', message: 'Account created successfully!' });
                 setTimeout(() => navigate('/login'), 2000);
             } else {
-                const errorData = await response.json();
-                setAlert({ show: true, type: 'error', message: errorData.message });
+                // const errorData = await response.json();
+                setAlert({ show: true, type: 'error', message: "Please revise your Credentials" });
             }
         } catch (error) {
             setLoading(false);

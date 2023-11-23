@@ -22,10 +22,14 @@ router.delete('/delete', userController.deleteUser);
 router.put('/update/:userId', userController.updateProfile);
 
 // User Profile View
-router.get('/profile/:userId', userController.viewProfile);
+router.get('/profile/:id', userController.viewProfile);
 
 // User Deletion
 router.delete('/delete/:userId', userController.deleteUser);
+
+router.get('/balance/:uniqueId', userController.getUserBalance);
+
+
 
 // Route to elevate user to admin
 router.put('/makeAdmin/:userId', authMiddleware.requireSignin, authMiddleware.isAdmin, userController.makeAdmin);

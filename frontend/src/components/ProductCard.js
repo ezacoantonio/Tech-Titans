@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { Card, CardHeader, CardMedia, CardContent, CardActions, Collapse, Avatar, IconButton, Typography } from '@mui/material';
+import { Card, CardHeader, CardMedia, CardContent, CardActions, Collapse, Avatar, IconButton, Typography, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Link } from 'react-router-dom';
@@ -19,11 +17,46 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, onPurchase }) {
   const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [userBalance, setUserBalance] = useState(0);
+  
+
+  useEffect(() => {
+    const fetchUserBalance = async () => {
+      const userId = 'current-user-unique-id'; // Replace with actual logic to get current user's ID
+      try {
+        const response = await fetch(`/api/users/balance/${userId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setUserBalance(data.balance);
+        } else {
+          console.error('Error fetching balance:', data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchUserBalance();
+  }, []);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handlePurchaseClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleConfirmPurchase = () => {
+    onPurchase(product._id);
+    handleClose();
   };
 
   return (
@@ -49,17 +82,14 @@ export default function ProductCard({ product }) {
         alt={product.name}
       />
       <CardContent>
+        <Button variant="contained" color="primary" onClick={handlePurchaseClick}>
+          Purchase
+        </Button>
         <Typography variant="body2" color="text.secondary">
           {product.description}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
@@ -71,18 +101,34 @@ export default function ProductCard({ product }) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {/* Additional details can be added here */}
           <Typography paragraph>
             Category: {product.category}
-          </Typography>
-          <Typography paragraph>
-            {/* Additional product details */}
           </Typography>
           <Typography>
             <Link to={`/product/${product._id}`}>View Product</Link>
           </Typography>
         </CardContent>
       </Collapse>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{"Confirm Purchase"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Price: ${product.price}
+            <br />
+            Your Balance: ${userBalance}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmPurchase} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }
+
+

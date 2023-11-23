@@ -15,6 +15,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import useStyles from "../styles/NavigationAppBarStyles";
+import { TextField, InputAdornment } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function NavigationAppBar() {
   const classes = useStyles();
@@ -26,35 +28,46 @@ export default function NavigationAppBar() {
 
   useEffect(() => {
     const checkAuthStatus = () => {
-      const token = localStorage.getItem("userToken");
-      setAuth(!!token);
-      if (token) {
-        const userId = localStorage.getItem("userId");
-        fetchUserData(userId);
-      }
+        const token = localStorage.getItem("userToken");
+        setAuth(!!token);
+        if (token) {
+            const uniqueId = localStorage.getItem("uniqueId");
+            fetchUserData(uniqueId);
+        }
     };
 
     // Listen for an 'authChange' event
-    window.addEventListener('authChange', checkAuthStatus);
+    window.addEventListener("authChange", checkAuthStatus);
 
     // Initial check
     checkAuthStatus();
 
     // Cleanup
     return () => {
-      window.removeEventListener('authChange', checkAuthStatus);
+      window.removeEventListener("authChange", checkAuthStatus);
     };
   }, []);
 
-  const fetchUserData = async (userId) => {
+ 
+  const fetchUserData = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/users/profile/${userId}`);
-      const userData = await response.json();
-      setUser(userData);
+        const uniqueId = localStorage.getItem("_id");
+        console.log(uniqueId); // Correct key to get the unique ID
+        if (!uniqueId) {
+            console.error("No user ID found in local storage");
+            return;
+        }
+        console.log(uniqueId); // Log the unique ID for debugging
+        const response = await fetch(`http://localhost:5000/users/profile/${uniqueId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+        const userData = await response.json();
+        setUser(userData);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+        console.error("Error fetching user data:", error);
     }
-  };
+};
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -65,8 +78,9 @@ export default function NavigationAppBar() {
   };
 
   const handleAccountPopupOpen = () => {
+    fetchUserData(); // Fetch user data when the account popup is opened
     setAccountPopupOpen(true);
-  };
+};
 
   const handleAccountPopupClose = () => {
     setAccountPopupOpen(false);
@@ -88,7 +102,13 @@ export default function NavigationAppBar() {
     localStorage.removeItem("userId");
     setAuth(false);
     navigate("/login");
-    window.dispatchEvent(new Event('authChange'));
+    window.dispatchEvent(new Event("authChange"));
+  };
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    navigate(`/homepage?search=${searchQuery}`);
   };
 
   return (
@@ -112,6 +132,23 @@ export default function NavigationAppBar() {
           </Typography>
           {auth ? (
             <>
+              <TextField
+                label="Search Products"
+                variant="outlined"
+                size="small"
+                sx={{ mr: 2, ml: "auto" }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleSearch}>
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
               <IconButton
                 size="large"
                 edge="end"
@@ -121,7 +158,9 @@ export default function NavigationAppBar() {
               >
                 <AccountCircle />
               </IconButton>
-              <Button color="inherit" onClick={handleLogout}>Logout</Button>
+              <Button color="inherit" onClick={handleLogout}>
+                Logout
+              </Button>
             </>
           ) : (
             <Menu
@@ -148,20 +187,32 @@ export default function NavigationAppBar() {
             </Menu>
           )}
         </Toolbar>
-      </AppBar>
-
+      </AppBar>  
+      {/* const balance = fetch('http://localhost:5000/users/balance/2e8b5673-0e3b-42ad-8b7b-8c79dc59a774'); */}
       {/* Account Popup Dialog */}
       <Dialog open={accountPopupOpen} onClose={handleAccountPopupClose}>
         <DialogTitle>Account Details</DialogTitle>
         <DialogContent>
           {user ? (
             <>
-              <Typography variant="body1"><b>First Name:</b> {user.firstName}</Typography>
-              <Typography variant="body1"><b>Last Name:</b> {user.lastName}</Typography>
-              <Typography variant="body1"><b>Email:</b> {user.email}</Typography>
-              <Typography variant="body1"><b>Username:</b> {user.username}</Typography>
-              <Typography variant="body1"><b>Account Balance:</b> {user.accountBalance}</Typography>
-              <Typography variant="body1"><b>Role:</b> {user.role}</Typography>
+              <Typography variant="body1">
+                <b>First Name:</b> {user.firstName}
+              </Typography>
+              <Typography variant="body1">
+                <b>Last Name:</b> {user.lastName}
+              </Typography>
+              <Typography variant="body1">
+                <b>Email:</b> {user.email}
+              </Typography>
+              <Typography variant="body1">
+                <b>Username:</b> {user.username}
+              </Typography>
+              <Typography variant="body1">
+                <b>Account Balance:</b> {user.accountBalance}
+              </Typography>
+              <Typography variant="body1">
+                <b>Role:</b> {user.role}
+              </Typography>
               {/* Add more fields as needed */}
             </>
           ) : (

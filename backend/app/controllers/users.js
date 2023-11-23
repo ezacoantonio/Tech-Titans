@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 
 // Environment variables
 const secret = process.env.JWT_SECRET;
@@ -23,7 +24,9 @@ exports.register = async (req, res) => {
         }
 
         const user = new User(req.body);
-        user.password = req.body.password; // This will trigger the virtual setter
+        user.password = req.body.password;
+        user.uniqueId = uuidv4();
+         // This will trigger the virtual setter
         await user.save();
         res.status(200).json({ message: "User successfully registered" });
     } catch (error) {
@@ -37,8 +40,9 @@ exports.login = async (req, res) => {
         if (!user || !user.authenticate(req.body.password)) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
-        const token = jwt.sign({ _id: user._id, role: user.role }, secret, { expiresIn: '1h' });
-        res.status(200).json({ token });
+        const token = jwt.sign({ _id: user._id}, secret, { expiresIn: '1h' });
+        const { _id, firstName, lastName } = user;
+        res.status(200).json({ token, user: { _id, firstName, lastName } }); // Include token, firstName, lastName, and _id in response
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -55,15 +59,19 @@ exports.getAllUsers = async (req, res) => {
 
 exports.viewProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId);
+        const user = await User.findById(req.params.id); // Using findById for _id
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.status(200).json(user);
+        // Exclude sensitive information like password before sending the user data
+        const { password, ...userWithoutPassword } = user.toObject();
+        res.status(200).json(userWithoutPassword);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
+
 
 exports.updateProfile = async (req, res) => {
     try {
@@ -104,6 +112,19 @@ exports.deleteUser = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getUserBalance = async (req, res) => {
+    try {
+        const user = await User.findOne({ uniqueId: req.params.uniqueId });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ balance: user.accountBalance });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 
 // Additional controllers for admin functionality can be added here
