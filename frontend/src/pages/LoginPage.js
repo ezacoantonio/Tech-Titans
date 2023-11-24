@@ -23,9 +23,11 @@ const LoginPage = () => {
             setLoading(false);
             if (response.status === 200) {
                 localStorage.setItem('userToken', response.data.token);
-                console.log(response.data.token);
+                // console.log(response.data.token);
                 localStorage.setItem('_id', response.data.user._id); // Corrected to access _id from user object
-                console.log(response.data.user._id); // Corrected to access _id from user object
+                // Corrected to access _id from user object
+                localStorage.setItem('accountBalance', response.data.user.accountBalance);
+                console.log(response.data.user.accountBalance); 
                 setAlert({ show: true, type: 'success', message: 'Login successful!' });
                 console.log('Login successful!');
                 setTimeout(() => navigate(from, { replace: true }), 100);

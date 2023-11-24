@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -20,35 +20,35 @@ import SearchIcon from "@mui/icons-material/Search";
 
 export default function NavigationAppBar() {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [auth, setAuth] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [accountPopupOpen, setAccountPopupOpen] = useState(false);
   const [user, setUser] = useState({});
-  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const checkAuthStatus = () => {
-        const token = localStorage.getItem("userToken");
-        setAuth(!!token);
-        if (token) {
-            const uniqueId = localStorage.getItem("uniqueId");
-            fetchUserData(uniqueId);
-        }
+      const token = localStorage.getItem("userToken");
+      setAuth(!!token);
+      if (token) {
+        const uniqueId = localStorage.getItem("uniqueId");
+        fetchUserData(uniqueId);
+      }
     };
+
+    checkAuthStatus();
 
     // Listen for an 'authChange' event
     window.addEventListener("authChange", checkAuthStatus);
-
-    // Initial check
-    checkAuthStatus();
 
     // Cleanup
     return () => {
       window.removeEventListener("authChange", checkAuthStatus);
     };
-  }, []);
+  }, [location]); // Added location as a dependency
 
- 
   const fetchUserData = async () => {
     try {
         const uniqueId = localStorage.getItem("_id");
@@ -66,9 +66,8 @@ export default function NavigationAppBar() {
         setUser(userData);
     } catch (error) {
         console.error("Error fetching user data:", error);
-    }
-};
-
+    }}
+    
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -78,9 +77,8 @@ export default function NavigationAppBar() {
   };
 
   const handleAccountPopupOpen = () => {
-    fetchUserData(); // Fetch user data when the account popup is opened
     setAccountPopupOpen(true);
-};
+  };
 
   const handleAccountPopupClose = () => {
     setAccountPopupOpen(false);
@@ -104,8 +102,6 @@ export default function NavigationAppBar() {
     navigate("/login");
     window.dispatchEvent(new Event("authChange"));
   };
-
-  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
     navigate(`/homepage?search=${searchQuery}`);
@@ -187,8 +183,7 @@ export default function NavigationAppBar() {
             </Menu>
           )}
         </Toolbar>
-      </AppBar>  
-      {/* const balance = fetch('http://localhost:5000/users/balance/2e8b5673-0e3b-42ad-8b7b-8c79dc59a774'); */}
+      </AppBar>
       {/* Account Popup Dialog */}
       <Dialog open={accountPopupOpen} onClose={handleAccountPopupClose}>
         <DialogTitle>Account Details</DialogTitle>

@@ -24,23 +24,15 @@ export default function ProductCard({ product, onPurchase }) {
   
 
   useEffect(() => {
-    const fetchUserBalance = async () => {
-      const userId = 'current-user-unique-id'; // Replace with actual logic to get current user's ID
-      try {
-        const response = await fetch(`/api/users/balance/${userId}`);
-        const data = await response.json();
-        if (response.ok) {
-          setUserBalance(data.balance);
-        } else {
-          console.error('Error fetching balance:', data.message);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
-    fetchUserBalance();
+    const accountBalance = localStorage.getItem('accountBalance');
+    if (accountBalance) {
+      setUserBalance(accountBalance);
+    } else {
+      console.error('No account balance found');
+    }
   }, []);
+  
+
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -54,10 +46,10 @@ export default function ProductCard({ product, onPurchase }) {
     setOpen(false);
   };
 
-  const handleConfirmPurchase = () => {
-    onPurchase(product._id);
-    handleClose();
-  };
+  // const handleConfirmPurchase = () => {
+  //   onPurchase(product._id);
+  //   handleClose();
+  // };
 
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -122,8 +114,8 @@ export default function ProductCard({ product, onPurchase }) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleConfirmPurchase} color="primary" autoFocus>
-            Confirm
+          <Button color="primary" autoFocus>
+          <Link to={`/product/${product._id}`}>View Product</Link>
           </Button>
         </DialogActions>
       </Dialog>
