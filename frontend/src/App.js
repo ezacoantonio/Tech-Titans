@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/AdminDashboard"; // Import the AdminDashboar
 import ProtectedRoute from "./components/ProtectedRoute";
 import NavigationBar from "./components/NavigationBar";
 import HomePage from "./pages/HomePage";
+import ProductDetailPage from './components/ProductDetailPage';
 import ProfilePage from './pages/ProfilePage';
 
 function App() {
@@ -38,13 +39,14 @@ function App() {
         />
         {/* Admin Dashboard Route */}
         <Route
-          path="/admin-dashboard"
+          path="/admin-dashboard"c
           element={
             <ProtectedRoute>
               <AdminDashboard />
             </ProtectedRoute>
           }
         />
+        <Route path="/product/:productId" element={<ProductDetailPage />} />
       </Routes>
     </Router>
   );
