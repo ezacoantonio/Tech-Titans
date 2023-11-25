@@ -17,7 +17,9 @@ import DialogTitle from "@mui/material/DialogTitle";
 import useStyles from "../styles/NavigationAppBarStyles";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import CustomAlert from './CustomAlert';
+import CustomAlert from "./CustomAlert";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 
 export default function NavigationAppBar() {
   const classes = useStyles();
@@ -28,7 +30,7 @@ export default function NavigationAppBar() {
   const [accountPopupOpen, setAccountPopupOpen] = useState(false);
   const [user, setUser] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+  const [alert, setAlert] = useState({ show: false, type: "", message: "" });
 
   useEffect(() => {
     const checkAuthStatus = () => {
@@ -53,21 +55,24 @@ export default function NavigationAppBar() {
 
   const fetchUserData = async () => {
     try {
-        const uniqueId = localStorage.getItem("_id");
-        if (!uniqueId) {
-            console.error("No user ID found in local storage");
-            return;
-        }
-        const response = await fetch(`http://localhost:5000/users/profile/${uniqueId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch user data');
-        }
-        const userData = await response.json();
-        setUser(userData);
+      const uniqueId = localStorage.getItem("_id");
+      if (!uniqueId) {
+        console.error("No user ID found in local storage");
+        return;
+      }
+      const response = await fetch(
+        `http://localhost:5000/users/profile/${uniqueId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+      const userData = await response.json();
+      setUser(userData);
     } catch (error) {
-        console.error("Error fetching user data:", error);
-    }}
-    
+      console.error("Error fetching user data:", error);
+    }
+  };
+
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -109,7 +114,7 @@ export default function NavigationAppBar() {
 
   const handleAdminDashboard = () => {
     if (user.role !== "administrator") {
-      setAlert({ show: true, type: 'error', message: 'You are not an admin!' });
+      setAlert({ show: true, type: "error", message: "You are not an admin!" });
       return;
     }
     navigate("/admin-dashboard");
@@ -117,7 +122,13 @@ export default function NavigationAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-    {alert.show && <CustomAlert showAlert={alert.show} alertMessage={alert.message} success={alert.type === 'success'} />}
+      {alert.show && (
+        <CustomAlert
+          showAlert={alert.show}
+          alertMessage={alert.message}
+          success={alert.type === "success"}
+        />
+      )}
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
           <IconButton
@@ -130,9 +141,19 @@ export default function NavigationAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
               Titan Store
+            </Link>
+          </Typography> */}
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+
+              <img
+                src="https://img.freepik.com/premium-vector/letter-logo-m-titan-logo_755682-491.jpg"
+                alt="Titan Store Logo"
+                style={{ height: "50px", borderRadius: "50%", marginTop: "8px" }}
+              />
             </Link>
           </Typography>
           {auth ? (
@@ -163,12 +184,23 @@ export default function NavigationAppBar() {
               >
                 <AccountCircle />
               </IconButton>
-              <Button color="inherit" onClick={handleLogout}>
+              <IconButton
+                color="inherit"
+                onClick={handleLogout}
+                aria-label="logout"
+              >
+                <LogoutIcon />
+              </IconButton>
+              {/* <Button color="inherit" onClick={handleLogout}>
                 Logout
-              </Button>
-              <Button color="inherit" onClick={handleAdminDashboard}>
-                Sell Products!
-              </Button>
+              </Button> */}
+              <IconButton
+                color="inherit"
+                onClick={handleAdminDashboard}
+                aria-label="admin dashboard"
+              >
+                <SupervisorAccountIcon />
+              </IconButton>
             </>
           ) : (
             <Menu
@@ -230,7 +262,6 @@ export default function NavigationAppBar() {
           <Button onClick={handleAccountPopupClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      
     </Box>
   );
 }

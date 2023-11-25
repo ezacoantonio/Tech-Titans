@@ -1,7 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import ProductCreationPopup from '../components/ProductCreationPopup';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Container, Box } from '@mui/material';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import ProductCreationPopup from "../components/ProductCreationPopup";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Container,
+  Box,
+} from "@mui/material";
+import axios from "axios";
 
 const AdminDashboard = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -13,10 +24,12 @@ const AdminDashboard = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/products/listproducts');
+      const response = await axios.get(
+        "http://localhost:5000/products/listproducts"
+      );
       setProducts(response.data.products);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -27,13 +40,28 @@ const AdminDashboard = () => {
   const handleClosePopup = () => {
     setOpenPopup(false);
   };
+  const backToHomepage = () => {
+    window.location.href = "/homepage";
+  }
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Button variant="contained" color="secondary" onClick={handleOpenPopup}>
         Add New Product
       </Button>
-      <ProductCreationPopup open={openPopup} handleClose={handleClosePopup} refreshProducts={fetchProducts} />
+      <Button
+        variant="contained"
+        color="info"
+        sx={{ marginLeft: 2, color: "white" }}
+        onClick={backToHomepage}
+      >
+        View Homepage
+      </Button>
+      <ProductCreationPopup
+        open={openPopup}
+        handleClose={handleClosePopup}
+        refreshProducts={fetchProducts}
+      />
 
       <TableContainer component={Paper} sx={{ marginTop: 3 }}>
         <Table aria-label="simple table">
@@ -55,7 +83,7 @@ const AdminDashboard = () => {
                     sx={{
                       height: 50,
                       width: 50,
-                      borderRadius: '50%',
+                      borderRadius: "50%",
                     }}
                     src={product.imageUrls[0]}
                     alt={product.name}
@@ -65,9 +93,7 @@ const AdminDashboard = () => {
                 <TableCell>{product.description}</TableCell>
                 <TableCell>${product.price}</TableCell>
                 <TableCell>{product.category}</TableCell>
-                <TableCell>
-                  {/* Add any action buttons here */}
-                </TableCell>
+                <TableCell>{/* Add any action buttons here */}</TableCell>
               </TableRow>
             ))}
           </TableBody>
