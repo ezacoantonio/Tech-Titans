@@ -1,10 +1,7 @@
-// src/pages/AdminDashboard.js
-
 import React, { useState, useEffect } from 'react';
 import ProductCreationPopup from '../components/ProductCreationPopup';
-import { Button, Grid } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Container, Box } from '@mui/material';
 import axios from 'axios';
-import ProductCard from '../components/ProductCard'; // Assuming you have a ProductCard component
 
 const AdminDashboard = () => {
   const [openPopup, setOpenPopup] = useState(false);
@@ -32,19 +29,51 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div>
-      <Button variant="contained" color="primary" onClick={handleOpenPopup}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Button variant="contained" color="secondary" onClick={handleOpenPopup}>
         Add New Product
       </Button>
       <ProductCreationPopup open={openPopup} handleClose={handleClosePopup} refreshProducts={fetchProducts} />
-      <Grid container spacing={3}>
-        {products.map((product) => (
-          <Grid item xs={12} sm={6} md={4} key={product._id}>
-            <ProductCard product={product} />
-          </Grid>
-        ))}
-      </Grid>
-    </div>
+
+      <TableContainer component={Paper} sx={{ marginTop: 3 }}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Image</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell>Category</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {products.map((product) => (
+              <TableRow key={product._id}>
+                <TableCell>
+                  <Box
+                    component="img"
+                    sx={{
+                      height: 50,
+                      width: 50,
+                      borderRadius: '50%',
+                    }}
+                    src={product.imageUrls[0]}
+                    alt={product.name}
+                  />
+                </TableCell>
+                <TableCell>{product.name}</TableCell>
+                <TableCell>{product.description}</TableCell>
+                <TableCell>${product.price}</TableCell>
+                <TableCell>{product.category}</TableCell>
+                <TableCell>
+                  {/* Add any action buttons here */}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 };
 

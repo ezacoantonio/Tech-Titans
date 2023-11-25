@@ -17,6 +17,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import useStyles from "../styles/NavigationAppBarStyles";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import CustomAlert from './CustomAlert';
 
 export default function NavigationAppBar() {
   const classes = useStyles();
@@ -27,6 +28,7 @@ export default function NavigationAppBar() {
   const [accountPopupOpen, setAccountPopupOpen] = useState(false);
   const [user, setUser] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   useEffect(() => {
     const checkAuthStatus = () => {
@@ -52,12 +54,10 @@ export default function NavigationAppBar() {
   const fetchUserData = async () => {
     try {
         const uniqueId = localStorage.getItem("_id");
-        console.log(uniqueId); // Correct key to get the unique ID
         if (!uniqueId) {
             console.error("No user ID found in local storage");
             return;
         }
-        console.log(uniqueId); // Log the unique ID for debugging
         const response = await fetch(`http://localhost:5000/users/profile/${uniqueId}`);
         if (!response.ok) {
             throw new Error('Failed to fetch user data');
@@ -107,8 +107,17 @@ export default function NavigationAppBar() {
     navigate(`/homepage?search=${searchQuery}`);
   };
 
+  const handleAdminDashboard = () => {
+    if (user.role !== "administrator") {
+      setAlert({ show: true, type: 'error', message: 'You are not an admin!' });
+      return;
+    }
+    navigate("/admin-dashboard");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
+    {alert.show && <CustomAlert showAlert={alert.show} alertMessage={alert.message} success={alert.type === 'success'} />}
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
           <IconButton
@@ -156,6 +165,9 @@ export default function NavigationAppBar() {
               </IconButton>
               <Button color="inherit" onClick={handleLogout}>
                 Logout
+              </Button>
+              <Button color="inherit" onClick={handleAdminDashboard}>
+                Sell Products!
               </Button>
             </>
           ) : (
@@ -218,6 +230,7 @@ export default function NavigationAppBar() {
           <Button onClick={handleAccountPopupClose}>Close</Button>
         </DialogActions>
       </Dialog>
+      
     </Box>
   );
 }
