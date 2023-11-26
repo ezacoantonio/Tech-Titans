@@ -16,10 +16,10 @@ router.get('/listproducts', productController.getAllProducts);
 router.get('/listproduct/:id', productController.getProductById);
 
 // PUT: Update a product (Admin only)
-router.put('/update/:id', auth.requireSignin, auth.isAdmin, productController.updateProduct);
+router.put('/update/:id', auth.requireSignin, productController.updateProduct);
 
 // DELETE: Delete a product (Admin only)
-router.delete('/delete/:id', auth.requireSignin, auth.isAdmin, productController.deleteProduct);
+router.delete('/delete/:id', auth.requireSignin, productController.deleteProduct);
 
 // GET: Search products
 router.get('/search', productController.searchProducts);
