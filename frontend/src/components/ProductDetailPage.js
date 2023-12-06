@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import CustomAlert from './CustomAlert';
 import { useParams } from 'react-router-dom';
 import { Typography, Button, CircularProgress, Box, Container, Paper } from '@mui/material';
+import HalfRating from './HalfRating';  // Adjust the path based on your project structure
+
 
 function ProductDetailPage() {
   const [product, setProduct] = useState(null);
@@ -90,6 +92,7 @@ const handleConfirmPurchase = async () => {
           <Typography gutterBottom variant="h4" component="div">
             {product.name}
           </Typography>
+          <HalfRating /> {/* Add this line for star ratings */}
           <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
             {product.description}
           </Typography>
@@ -97,13 +100,13 @@ const handleConfirmPurchase = async () => {
             Price: ${product.price}
           </Typography>
           <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleConfirmPurchase}>
-          Confirm Purchase
-        </Button>
+            Confirm Purchase
+          </Button>
         </Box>
       </Paper>
       <Button variant="contained" color="secondary" sx={{ mt: 2 }} onClick={backToHomepage}>
-      Continue Shopping
-    </Button>
+        Continue Shopping
+      </Button>
     </Container>
   );
 }
