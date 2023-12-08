@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
+import axios from "axios"; 
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -20,6 +21,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CustomAlert from "./CustomAlert";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+// import SupervisorAccountIcon from "../../public/assets/blue-logo.png";
 
 export default function NavigationAppBar() {
   const classes = useStyles();
@@ -31,6 +33,14 @@ export default function NavigationAppBar() {
   const [user, setUser] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [alert, setAlert] = useState({ show: false, type: "", message: "" });
+
+  const [editAccountPopupOpen, setEditAccountPopupOpen] = useState(false);
+  const [editAccountData, setEditAccountData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    // Include other user fields that need to be editable
+  });
 
   useEffect(() => {
     const checkAuthStatus = () => {
@@ -120,6 +130,42 @@ export default function NavigationAppBar() {
     navigate("/admin-dashboard");
   };
 
+
+  const handleAccountEditOpen = () => {
+    setEditAccountData({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        // Include other user fields as needed
+    });
+    setEditAccountPopupOpen(true);
+};
+
+const handleAccountSave = async () => {
+  try {
+      const userToken = localStorage.getItem('userToken');
+      if (!userToken) {
+          setAlert({ show: true, type: 'error', message: 'No user token found. Please log in.' });
+          return;
+      }
+
+      await axios.put(`http://localhost:5000/users/update/${user._id}`, editAccountData, {
+          headers: {
+              'Authorization': `Bearer ${userToken}`
+          }
+      });
+
+      setAlert({ show: true, type: 'success', message: "Account updated successfully!" });
+      setEditAccountPopupOpen(false);
+
+      // Navigate to the same route to effectively reload the current page
+      navigate(0);
+  } catch (error) {
+      console.error('Error updating account:', error);
+      setAlert({ show: true, type: 'error', message: 'Error updating account. Please try again.' });
+  }
+};
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       {alert.show && (
@@ -141,18 +187,16 @@ export default function NavigationAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-              Titan Store
-            </Link>
-          </Typography> */}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-
               <img
-                src="https://img.freepik.com/premium-vector/letter-logo-m-titan-logo_755682-491.jpg"
+                src="https://i.ibb.co/4jb5ChX/DALL-E-2023-11-26-15-19-50-A-vibrant-blue-logo-with-the-text-Titan-Store-underneath-The-logo-should.png"
                 alt="Titan Store Logo"
-                style={{ height: "50px", borderRadius: "50%", marginTop: "8px" }}
+                style={{
+                  height: "50px",
+                  borderRadius: "50%",
+                  marginTop: "8px",
+                }}
               />
             </Link>
           </Typography>
@@ -230,38 +274,72 @@ export default function NavigationAppBar() {
       </AppBar>
       {/* Account Popup Dialog */}
       <Dialog open={accountPopupOpen} onClose={handleAccountPopupClose}>
-        <DialogTitle>Account Details</DialogTitle>
-        <DialogContent>
-          {user ? (
+    <DialogTitle>Account Details</DialogTitle>
+    <DialogContent>
+        {user ? (
             <>
-              <Typography variant="body1">
-                <b>First Name:</b> {user.firstName}
-              </Typography>
-              <Typography variant="body1">
-                <b>Last Name:</b> {user.lastName}
-              </Typography>
-              <Typography variant="body1">
-                <b>Email:</b> {user.email}
-              </Typography>
-              <Typography variant="body1">
-                <b>Username:</b> {user.username}
-              </Typography>
-              <Typography variant="body1">
-                <b>Account Balance:</b> {user.accountBalance}
-              </Typography>
-              <Typography variant="body1">
-                <b>Role:</b> {user.role}
-              </Typography>
-              {/* Add more fields as needed */}
+                <Typography variant="body1">
+                    <b>First Name:</b> {user.firstName}
+                </Typography>
+                <Typography variant="body1">
+                    <b>Last Name:</b> {user.lastName}
+                </Typography>
+                <Typography variant="body1">
+                    <b>Email:</b> {user.email}
+                </Typography>
+                <Typography variant="body1">
+                    <b>Username:</b> {user.username}
+                </Typography>
+                <Typography variant="body1">
+                    <b>Account Balance:</b> {user.accountBalance}
+                </Typography>
+                <Typography variant="body1">
+                    <b>Role:</b> {user.role}
+                </Typography>
+                {/* Add more fields as needed */}
             </>
-          ) : (
+        ) : (
             <Typography>Loading user details...</Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleAccountPopupClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
+        )}
+    </DialogContent>
+    <DialogActions>
+        <Button onClick={handleAccountEditOpen}>Edit</Button>
+        <Button onClick={handleAccountPopupClose}>Close</Button>
+    </DialogActions>
+</Dialog>
+
+{/* Edit Account Dialog */}
+<Dialog open={editAccountPopupOpen} onClose={() => setEditAccountPopupOpen(false)}>
+    <DialogTitle>Edit Account</DialogTitle>
+    <DialogContent>
+        <TextField
+            label="First Name"
+            fullWidth
+            margin="dense"
+            value={editAccountData.firstName}
+            onChange={(e) => setEditAccountData({ ...editAccountData, firstName: e.target.value })}
+        />
+        <TextField
+            label="Last Name"
+            fullWidth
+            margin="dense"
+            value={editAccountData.lastName}
+            onChange={(e) => setEditAccountData({ ...editAccountData, lastName: e.target.value })}
+        />
+        <TextField
+            label="Username"
+            fullWidth
+            margin="dense"
+            value={editAccountData.username}
+            onChange={(e) => setEditAccountData({ ...editAccountData, username: e.target.value })}
+        />
+    </DialogContent>
+    <DialogActions>
+        <Button onClick={() => setEditAccountPopupOpen(false)}>Cancel</Button>
+        <Button onClick={handleAccountSave}>Save</Button>
+    </DialogActions>
+</Dialog>
+
     </Box>
   );
 }

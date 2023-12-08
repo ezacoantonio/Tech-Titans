@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { red } from "@mui/material/colors";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ImageIcon from "@mui/icons-material/Image";
 import { Link } from "react-router-dom";
 
 const ExpandMore = styled((props) => {
@@ -37,6 +37,7 @@ export default function ProductCard({ product, onPurchase }) {
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
   const [userBalance, setUserBalance] = useState(0);
+  const [imagePopupOpen, setImagePopupOpen] = useState(false);
 
   useEffect(() => {
     const accountBalance = localStorage.getItem("accountBalance");
@@ -59,10 +60,8 @@ export default function ProductCard({ product, onPurchase }) {
     setOpen(false);
   };
 
-  // const handleConfirmPurchase = () => {
-  //   onPurchase(product._id);
-  //   handleClose();
-  // };
+  const handleOpenImagePopup = () => setImagePopupOpen(true);
+  const handleCloseImagePopup = () => setImagePopupOpen(false);
 
   return (
     <Card sx={{ maxWidth: 345, margin: 3 }}>
@@ -73,28 +72,34 @@ export default function ProductCard({ product, onPurchase }) {
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
+          <IconButton aria-label="show image" onClick={handleOpenImagePopup}>
+            <ImageIcon />
           </IconButton>
         }
         title={product.name}
         subheader={`Price: $${product.price}`}
       />
+      <Dialog open={imagePopupOpen} onClose={handleCloseImagePopup}>
+        <DialogContent>
+          <img
+            src={product.imageUrls[0]}
+            alt={product.name}
+            style={{ maxWidth: "100%", height: "auto" }}
+          />
+        </DialogContent>
+      </Dialog>
       <CardMedia
         component="img"
         sx={{
-          height: 194, // Fixed height
-          width: "100%", // Full width of the card
-          objectFit: "cover", // Ensures the image covers the area
-          objectPosition: "center", // Centers the image within the area
+          height: 194,
+          width: "100%",
+          objectFit: "cover",
+          objectPosition: "center",
         }}
         image={product.imageUrls[0] || "/default-product-image.jpg"}
         alt={product.name}
       />
       <CardContent>
-        {/* <Button variant="contained" color="primary" onClick={handlePurchaseClick}>
-          Purchase
-        </Button> */}
         <Typography paragraph>Category: {product.category}</Typography>
         <Typography variant="body2" color="text.secondary">
           {product.description}
