@@ -43,19 +43,23 @@ export default function ProductCard({ product }) {
   return (
     <Card sx={{ maxWidth: 345, margin: 3 }}>
       <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="product">
-            {product.name.charAt(0)}
-          </Avatar>
-        }
-        action={
-          <IconButton aria-label="show image" onClick={handleOpenImagePopup}>
-            <ImageIcon />
-          </IconButton>
-        }
-        title={product.name}
-        subheader={`Price: $${product.price}`}
-      />
+  avatar={
+    <Avatar sx={{ bgcolor: red[500] }} aria-label="product">
+      {product.name.charAt(0)}
+    </Avatar>
+  }
+  action={
+    <IconButton aria-label="show image" onClick={handleOpenImagePopup}>
+      <ImageIcon />
+    </IconButton>
+  }
+  title={product.name}
+  subheader={
+    <Typography component="span" variant="body2" sx={{ fontWeight: 'bold' }}>
+      Price: ${product.price}
+    </Typography>
+  }
+/>
       <Dialog open={imagePopupOpen} onClose={handleCloseImagePopup}>
         <DialogContent>
           <img
