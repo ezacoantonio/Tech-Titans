@@ -31,6 +31,8 @@ router.post('/add-question/:productId', productController.addQuestionToProduct);
 // POST: Answer a question on a product
 router.post('/answer-question/:productId/:questionId', auth.requireSignin, productController.answerQuestion);
 
+router.get('/myproducts', auth.requireSignin, productController.getProductsByOwner);
 
+router.put('/togglestatus/:id', productController.toggleProductStatus);
 
 module.exports = router;

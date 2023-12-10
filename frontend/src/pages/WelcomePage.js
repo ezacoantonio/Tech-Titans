@@ -26,7 +26,9 @@ const WelcomePage = () => {
     fetch("http://localhost:5000/products/listproducts")
       .then(response => response.json())
       .then(data => {
-        setProducts(data.products);
+        // Filter out products where 'isActive' is false
+        const enabledProducts = data.products.filter(product => product.isActive);
+        setProducts(enabledProducts);
       })
       .catch(error => {
         console.error("Error fetching products:", error);
@@ -93,6 +95,8 @@ const WelcomePage = () => {
 
   const welcomeImageUrl = "https://i.ibb.co/gFMdg0n/Banner.gif"; // Replace with your image URL
 
+
+  
   return (
     <div className={classes.root}>
       <Typography variant="h3" gutterBottom className={classes.welcomeText}>

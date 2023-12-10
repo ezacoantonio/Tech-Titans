@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductCreationPopup from "../components/ProductCreationPopup";
-import CustomAlert from '../components/CustomAlert';
+import CustomAlert from "../components/CustomAlert";
 import {
   Button,
   Table,
@@ -17,7 +17,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField
+  TextField,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -32,9 +33,9 @@ const AdminDashboard = () => {
     name: "",
     description: "",
     price: "",
-    category: ""
+    category: "",
   });
-  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+  const [alert, setAlert] = useState({ show: false, type: "", message: "" });
 
   useEffect(() => {
     fetchProducts();
@@ -47,18 +48,31 @@ const AdminDashboard = () => {
         description: currentProduct.description,
         price: currentProduct.price,
         category: currentProduct.category,
-        id: currentProduct._id
+        id: currentProduct._id,
       });
     }
   }, [currentProduct]);
 
-  
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/products/listproducts');
-      setProducts(response.data.products);
+      const userToken = localStorage.getItem("userToken");
+      const response = await axios.get(
+        "http://localhost:5000/products/myproducts",
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.data.products.length === 0) {
+        // Handle the case where there are no products
+        setProducts([]);
+      } else {
+        setProducts(response.data.products);
+      }
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -82,55 +96,118 @@ const AdminDashboard = () => {
 
   const handleEditSave = async () => {
     try {
-      const userToken = localStorage.getItem('userToken'); // Retrieve the token from local storage
-  
+      const userToken = localStorage.getItem("userToken"); // Retrieve the token from local storage
+
       // Check if the token exists
       if (!userToken) {
-        alert('No user token found. Please log in.');
+        alert("No user token found. Please log in.");
         return;
       }
-  
-      await axios.put(`http://localhost:5000/products/update/${currentProduct._id}`, editProductData, {
-        headers: {
-          'Authorization': `Bearer ${userToken}` // Include the token in the request headers
+
+      await axios.put(
+        `http://localhost:5000/products/update/${currentProduct._id}`,
+        editProductData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`, // Include the token in the request headers
+          },
         }
-      });
-  
+      );
+
       // alert("Updated successfully");
-      setAlert({ show: true, type: 'success', message: "Product updated successfully!" });
+      setAlert({
+        show: true,
+        type: "success",
+        message: "Product updated successfully!",
+      });
       fetchProducts();
       closePopups();
     } catch (error) {
-      console.error('Error updating product:', error);
-      setAlert({ show: true, type: 'error', message: 'Error updating product. Please try again.', duration: 3000 });
+      console.error("Error updating product:", error);
+      setAlert({
+        show: true,
+        type: "error",
+        message: "Error updating product. Please try again.",
+        duration: 3000,
+      });
     }
   };
-  const handleDelete = async () => {
+  const handleToggleStatus = async () => {
     try {
-      const userToken = localStorage.getItem('userToken');
-      console.log('User Token:', userToken); // Debugging: Log the token
-  
+      const userToken = localStorage.getItem("userToken");
       if (!userToken) {
-        setAlert({ show: true, type: 'error', message: 'No user token found. Please log in!' });
+        console.error("No user token found. Please log in.");
         return;
       }
-  
-      const response = await axios.delete(`http://localhost:5000/products/delete/${currentProduct._id}`, {
-        headers: {
-          'Authorization': `Bearer ${userToken}`
+
+      const response = await axios.put(
+        `http://localhost:5000/products/togglestatus/${currentProduct._id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
         }
+      );
+
+      setAlert({
+        show: true,
+        type: "success",
+        message: `Product ${
+          response.data.product.isActive ? "enabled" : "disabled"
+        } successfully`,
       });
-  
-      console.log('Delete Response:', response); // Debugging: Log the response
-      setAlert({ show: true, type: 'success', message: "Product deleted successfully" });
       fetchProducts();
       closePopups();
     } catch (error) {
-      console.error('Error deleting product:', error);
-      setAlert({ show: true, type: 'error', message: 'Error deleting product. Please try again.' });
+      console.error("Error toggling product status:", error);
+      setAlert({
+        show: true,
+        type: "error",
+        message: "Error toggling product status. Please try again.",
+      });
     }
   };
-  
+  // const handleDelete = async () => {
+  //   try {
+  //     const userToken = localStorage.getItem("userToken");
+  //     console.log("User Token:", userToken); // Debugging: Log the token
+
+  //     if (!userToken) {
+  //       setAlert({
+  //         show: true,
+  //         type: "error",
+  //         message: "No user token found. Please log in!",
+  //       });
+  //       return;
+  //     }
+
+  //     const response = await axios.delete(
+  //       `http://localhost:5000/products/delete/${currentProduct._id}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${userToken}`,
+  //         },
+  //       }
+  //     );
+
+  //     console.log("Delete Response:", response); // Debugging: Log the response
+  //     setAlert({
+  //       show: true,
+  //       type: "success",
+  //       message: "Product deleted successfully",
+  //     });
+  //     fetchProducts();
+  //     closePopups();
+  //   } catch (error) {
+  //     console.error("Error deleting product:", error);
+  //     setAlert({
+  //       show: true,
+  //       type: "error",
+  //       message: "Error deleting product. Please try again.",
+  //     });
+  //   }
+  // };
 
   const closePopups = () => {
     setSettingsPopupOpen(false);
@@ -139,8 +216,14 @@ const AdminDashboard = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-    {alert.show && <CustomAlert showAlert={alert.show} alertMessage={alert.message} success={alert.type === 'success'} />}
-    <br></br>
+      {alert.show && (
+        <CustomAlert
+          showAlert={alert.show}
+          alertMessage={alert.message}
+          success={alert.type === "success"}
+        />
+      )}
+      <br></br>
       <Button variant="contained" color="secondary" onClick={handleOpenPopup}>
         Add New Product
       </Button>
@@ -148,10 +231,20 @@ const AdminDashboard = () => {
         variant="contained"
         color="info"
         sx={{ marginLeft: 2, color: "white" }}
-        onClick={() => window.location.href = "/homepage"}
+        onClick={() => (window.location.href = "/")}
       >
         View Homepage
       </Button>
+      {products.length === 0 ? (
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          You have no products on Titan Store.
+        </Typography>
+      ) : (
+        <TableContainer
+          component={Paper}
+          sx={{ marginTop: 3 }}
+        ></TableContainer>
+      )}
       <ProductCreationPopup
         open={openPopup}
         handleClose={handleClosePopup}
@@ -190,7 +283,10 @@ const AdminDashboard = () => {
                 <TableCell>${product.price}</TableCell>
                 <TableCell>{product.category}</TableCell>
                 <TableCell>
-                  <IconButton aria-label="settings" onClick={() => handleSettingsClick(product)}>
+                  <IconButton
+                    aria-label="settings"
+                    onClick={() => handleSettingsClick(product)}
+                  >
                     <MoreVertIcon />
                   </IconButton>
                 </TableCell>
@@ -208,7 +304,7 @@ const AdminDashboard = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleEdit}>Edit</Button>
-          <Button onClick={handleDelete}>Delete</Button>
+          <Button onClick={handleToggleStatus}>Toggle Status</Button>
         </DialogActions>
       </Dialog>
 
@@ -221,28 +317,42 @@ const AdminDashboard = () => {
             fullWidth
             margin="dense"
             value={editProductData.name}
-            onChange={(e) => setEditProductData({ ...editProductData, name: e.target.value })}
+            onChange={(e) =>
+              setEditProductData({ ...editProductData, name: e.target.value })
+            }
           />
           <TextField
             label="Description"
             fullWidth
             margin="dense"
             value={editProductData.description}
-            onChange={(e) => setEditProductData({ ...editProductData, description: e.target.value })}
+            onChange={(e) =>
+              setEditProductData({
+                ...editProductData,
+                description: e.target.value,
+              })
+            }
           />
           <TextField
             label="Price"
             fullWidth
             margin="dense"
             value={editProductData.price}
-            onChange={(e) => setEditProductData({ ...editProductData, price: e.target.value })}
+            onChange={(e) =>
+              setEditProductData({ ...editProductData, price: e.target.value })
+            }
           />
           <TextField
             label="Category"
             fullWidth
             margin="dense"
             value={editProductData.category}
-            onChange={(e) => setEditProductData({ ...editProductData, category: e.target.value })}
+            onChange={(e) =>
+              setEditProductData({
+                ...editProductData,
+                category: e.target.value,
+              })
+            }
           />
         </DialogContent>
         <DialogActions>

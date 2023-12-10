@@ -123,10 +123,6 @@ export default function NavigationAppBar() {
   };
 
   const handleAdminDashboard = () => {
-    if (user.role !== "administrator") {
-      setAlert({ show: true, type: "error", message: "You are not an admin!" });
-      return;
-    }
     navigate("/admin-dashboard");
   };
 

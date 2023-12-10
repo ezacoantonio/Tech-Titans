@@ -121,36 +121,35 @@ exports.addQuestionToProduct = async (req, res) => {
   }
 };
 
+exports.getProductsByOwner = async (req, res) => {
+  try {
+    const ownerId = req.user._id; // Ensure the user's ID is attached to req.user
+    const products = await Product.find({ owner: ownerId });
 
-// exports.answerQuestion = async (req, res) => {
-//   try {
-//     const product = await Product.findById(req.params.productId);
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
+    if (products.length === 0) {
+      return res.status(404).json({ message: "You have not uploaded any products" });
+    }
 
-//     // Check if the logged-in user is the owner of the product
-//     if (product.owner.toString() !== req.user._id.toString()) {
-//       return res.status(403).json({ message: "Unauthorized: Only the product owner can answer questions" });
-//     }
+    res.json({ products });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving products", error });
+  }
+};
 
-//     // Find the question and update its answer
-//     const question = product.questions.id(req.params.questionId);
-//     if (!question) {
-//       return res.status(404).json({ message: "Question not found" });
-//     }
 
-//     question.answer = req.body.answer;
-//     await product.save();
+// Backend route in products controller
 
-//     const updatedProduct = await Product.findById(req.params.productId);
-//     res.status(200).json({ message: "Answer added successfully", product });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error answering question", error: error.message });
-//   }
-// };
+exports.getMyProducts = async (req, res) => {
+  try {
+    const userId = req.user._id; // Assuming you have user ID in req.user
+    const products = await Product.find({ owner: userId });
 
-// ... existing imports and controller setup ...
+    res.status(200).json({ products });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching products", error: error.message });
+  }
+};
+
 
 exports.answerQuestion = async (req, res) => {
   try {
@@ -177,5 +176,20 @@ exports.answerQuestion = async (req, res) => {
   }
 };
 
+exports.toggleProductStatus = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
 
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.isActive = !product.isActive; // Toggle the isActive status
+    await product.save();
+
+    res.status(200).json({ message: `Product ${product.isActive ? 'enabled' : 'disabled'} successfully`, product });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating product status", error: error.message });
+  }
+};
 

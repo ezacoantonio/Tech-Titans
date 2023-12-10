@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const questionSchema = new Schema({
   text: { type: String, required: true },
   answer: { type: String, default: "" }, // Adding an 'answer' field with a default empty string
-  postedBy: { type: String } // Optional: Include user identifier or name
+  postedBy: { type: String }, // Optional: Include user identifier or name
 });
 
 const productSchema = new mongoose.Schema({
@@ -36,11 +36,17 @@ const productSchema = new mongoose.Schema({
   ],
   owner: {
     type: Schema.Types.ObjectId, // or type: String if you prefer using uniqueId
-    ref: 'User',
-    required: true
+    ref: "User",
+    required: true,
+  },
+  // In your Product model
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
   },
 
-  questions: [questionSchema]
+  questions: [questionSchema],
 });
 
 const Product = mongoose.model("Product", productSchema);
