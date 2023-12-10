@@ -1,64 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { styled } from "@mui/material/styles";
+import React, { useState } from "react";
+// import { styled } from "@mui/material/styles";
 import {
   Card,
   CardHeader,
   CardMedia,
   CardContent,
   CardActions,
-  Collapse,
   Avatar,
   IconButton,
   Typography,
   Button,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  DialogContent
 } from "@mui/material";
 import { red } from "@mui/material/colors";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ImageIcon from "@mui/icons-material/Image";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
+// const ExpandMore = styled((props) => {
+//   const { expand, ...other } = props;
+//   return <IconButton {...other} />;
+// })(({ theme, expand }) => ({
+//   transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+//   marginLeft: "auto",
+//   transition: theme.transitions.create("transform", {
+//     duration: theme.transitions.duration.shortest,
+//   }),
+// }));
 
-export default function ProductCard({ product, onPurchase }) {
-  const [expanded, setExpanded] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [userBalance, setUserBalance] = useState(0);
+export default function ProductCard({ product }) {
+  // const [expanded, setExpanded] = useState(false);
   const [imagePopupOpen, setImagePopupOpen] = useState(false);
 
-  useEffect(() => {
-    const accountBalance = localStorage.getItem("accountBalance");
-    if (accountBalance) {
-      setUserBalance(accountBalance);
-    } else {
-      console.error("No account balance found");
-    }
-  }, []);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
-  const handlePurchaseClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  // const handleExpandClick = () => {
+  //   setExpanded(!expanded);
+  // };
 
   const handleOpenImagePopup = () => setImagePopupOpen(true);
   const handleCloseImagePopup = () => setImagePopupOpen(false);
@@ -106,44 +83,23 @@ export default function ProductCard({ product, onPurchase }) {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <ExpandMore
+        {/* <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
           <ExpandMoreIcon />
-        </ExpandMore>
+        </ExpandMore> */}
+        <Button 
+          variant="contained" 
+          color="primary" 
+          component={RouterLink} 
+          to={`/product/${product._id}`}
+        >
+          View
+        </Button>
       </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handlePurchaseClick}
-          >
-            Purchase
-          </Button>
-        </CardContent>
-      </Collapse>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{"Confirm Purchase"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Price: ${product.price}
-            <br />
-            Your Balance: ${userBalance}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button color="primary" autoFocus>
-            <Link to={`/product/${product._id}`}>View Product</Link>
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Card>
   );
 }

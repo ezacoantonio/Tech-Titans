@@ -24,5 +24,13 @@ router.delete('/delete/:id', auth.requireSignin, productController.deleteProduct
 // GET: Search products
 router.get('/search', productController.searchProducts);
 
+// Route to add a question to a product
+router.post('/add-question/:productId', productController.addQuestionToProduct);
+
+
+// POST: Answer a question on a product
+router.post('/answer-question/:productId/:questionId', auth.requireSignin, productController.answerQuestion);
+
+
 
 module.exports = router;

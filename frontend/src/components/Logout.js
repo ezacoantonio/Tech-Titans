@@ -6,6 +6,9 @@ const Logout = () => {
 
   useEffect(() => {
     localStorage.removeItem('userToken');
+    localStorage.removeItem('_id');
+    localStorage.removeItem('accountBalance');
+    localStorage.removeItem('uniqueId');
     navigate('/login');
   }, [navigate]);
 

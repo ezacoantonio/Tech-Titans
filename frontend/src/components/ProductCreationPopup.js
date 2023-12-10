@@ -21,24 +21,36 @@ const ProductCreationPopup = ({ open, handleClose, refreshProducts }) => {
 
   const handleSubmit = async () => {
     try {
+      const ownerId = localStorage.getItem('_id'); // Retrieve the owner's _id from local storage
+      if (!ownerId) {
+        alert('User ID not found. Please log in again.');
+        return;
+      }
+  
       const token = localStorage.getItem('userToken'); // Ensure this is the correct key for the stored token
-
-      const response = await axios.post('http://localhost:5000/products/register', productDetails, {
+  
+      const productDataWithOwner = {
+        ...productDetails,
+        owner: ownerId // Add owner _id to the product details
+      };
+  
+      const response = await axios.post('http://localhost:5000/products/register', productDataWithOwner, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
+  
       if (response.status === 201) {
         alert('Product created successfully');
         refreshProducts();
         handleClose();
       }
     } catch (error) {
-      alert('Error creating product');
+      alert('Error creating product: ' + error.response.data.message || error.message);
       console.error('Error creating product:', error);
     }
   };
+  
 
   return (
     <Dialog open={open} onClose={handleClose}>

@@ -13,7 +13,7 @@ const LoginPage = () => {
     const [alert, setAlert] = useState({ show: false, type: '', message: '' });
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/homepage";
+    const from = location.state?.from?.pathname || "/";
 
     const handleSubmit = async (event) => {
         event.preventDefault();

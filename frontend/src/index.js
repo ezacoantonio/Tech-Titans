@@ -1,9 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { createRoot } from 'react-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import App from './App'; // or the path to your main component
+import { createRoot } from 'react-dom/client'; // Updated import
+import App from './App';
 
-const theme = createTheme();
+// Assuming 'root' is the ID of the div in your index.html where the React app attaches itself
+const container = document.getElementById('root');
+const root = createRoot(container); // Create a root.
 
-createRoot(document.getElementById('root')).render(<App />);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
