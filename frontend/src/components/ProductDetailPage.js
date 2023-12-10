@@ -71,7 +71,7 @@ const handleConfirmPurchase = async () => {
         
       } else {
         console.error('Purchase error:', data.message);
-        setAlert({ show: true, type: 'error', message: data.message || 'Error processing purchase' });
+        setAlert({ show: true, type: 'error', message: data.message && 'Log in or Create an account to purchase this item' });
       }
     } catch (error) {
       console.error('Error:', error);

@@ -45,7 +45,14 @@ const productSchema = new mongoose.Schema({
     required: true,
     default: true,
   },
-
+  createdAt: {
+    type: Date,
+    default: Date.now, // Automatically set to current time
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+  },
   questions: [questionSchema],
 });
 

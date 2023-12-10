@@ -168,46 +168,6 @@ const AdminDashboard = () => {
       });
     }
   };
-  // const handleDelete = async () => {
-  //   try {
-  //     const userToken = localStorage.getItem("userToken");
-  //     console.log("User Token:", userToken); // Debugging: Log the token
-
-  //     if (!userToken) {
-  //       setAlert({
-  //         show: true,
-  //         type: "error",
-  //         message: "No user token found. Please log in!",
-  //       });
-  //       return;
-  //     }
-
-  //     const response = await axios.delete(
-  //       `http://localhost:5000/products/delete/${currentProduct._id}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${userToken}`,
-  //         },
-  //       }
-  //     );
-
-  //     console.log("Delete Response:", response); // Debugging: Log the response
-  //     setAlert({
-  //       show: true,
-  //       type: "success",
-  //       message: "Product deleted successfully",
-  //     });
-  //     fetchProducts();
-  //     closePopups();
-  //   } catch (error) {
-  //     console.error("Error deleting product:", error);
-  //     setAlert({
-  //       show: true,
-  //       type: "error",
-  //       message: "Error deleting product. Please try again.",
-  //     });
-  //   }
-  // };
 
   const closePopups = () => {
     setSettingsPopupOpen(false);

@@ -3,18 +3,22 @@ const TAX_RATE = 0.15; // 15% tax rate
 
 exports.createProduct = async (req, res) => {
   try {
-    const newProductData = { ...req.body, owner: req.body.owner };
+    const newProductData = {
+      ...req.body,
+      owner: req.body.owner, // Assuming owner is passed in the request body
+      createdAt: new Date(), // Set the creation date to current date
+      expiresAt: new Date(req.body.expiresAt) // Use expiresAt from the request body
+    };
+
     const newProduct = new Product(newProductData);
     await newProduct.save();
-    res
-      .status(201)
-      .json({ message: "Product created successfully", product: newProduct });
+
+    res.status(201).json({ message: "Product created successfully", product: newProduct });
   } catch (error) {
-    res
-      .status(400)
-      .json({ message: "Error creating product", error: error.message });
+    res.status(400).json({ message: "Error creating product", error: error.message });
   }
 };
+
 
 exports.searchProducts = async (req, res) => {
   try {
