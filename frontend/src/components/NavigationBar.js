@@ -119,7 +119,7 @@ export default function NavigationAppBar() {
   };
 
   const handleSearch = () => {
-    navigate(`/WelcomeHome?search=${searchQuery}`);
+    navigate(`/?search=${searchQuery}`);
   };
 
   const handleAdminDashboard = () => {

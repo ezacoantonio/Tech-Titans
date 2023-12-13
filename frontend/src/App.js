@@ -19,6 +19,8 @@ function App() {
       <NavigationBar />
       <Routes>
         <Route path="/" element={<WelcomePage />} />
+        {/* <Route path="/WelcomePage" element={<WelcomePage />} /> */}
+
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/signup" element={<SignUpPage />} />

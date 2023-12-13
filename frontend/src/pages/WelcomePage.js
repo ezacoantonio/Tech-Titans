@@ -17,23 +17,40 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import ProductCard from '../components/ProductCard'; // Assuming you have this component
-
+import { useLocation } from 'react-router-dom';
 const WelcomePage = () => {
   const classes = useWelcomePageStyles();
   const [products, setProducts] = useState([]);
 
+  const location = useLocation();
+  const searchQuery = new URLSearchParams(location.search).get('search');
+
   useEffect(() => {
-    fetch("http://localhost:5000/products/listproducts")
-      .then(response => response.json())
-      .then(data => {
-        // Filter out products where 'isActive' is false
-        const enabledProducts = data.products.filter(product => product.isActive);
-        setProducts(enabledProducts);
-      })
-      .catch(error => {
-        console.error("Error fetching products:", error);
-      });
-  }, []);
+    if (searchQuery) {
+      fetch(`http://localhost:5000/products/search?query=${searchQuery}`)
+        .then(response => response.json())
+        .then(data => {
+          // Filter out products where 'isActive' is false
+          const filteredProducts = data.products.filter(product => product.isActive);
+          setProducts(filteredProducts);
+        })
+        .catch(error => {
+          console.error("Error fetching search results:", error);
+        });
+    } else {
+      fetch("http://localhost:5000/products/listproducts")
+        .then(response => response.json())
+        .then(data => {
+          // Filter out products where 'isActive' is false
+          const filteredProducts = data.products.filter(product => product.isActive);
+          setProducts(filteredProducts);
+        })
+        .catch(error => {
+          console.error("Error fetching products:", error);
+        });
+    }
+  }, [searchQuery, location]);
+
 
   const images = [
     "https://i.ibb.co/94Bykwk/PC-Picture.png",
